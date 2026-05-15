@@ -1,47 +1,37 @@
-import express from "express";
-import path from "path";
 import { Resend } from "resend";
-import dotenv from "dotenv";
 
-// Load environment variables at the very beginning
-dotenv.config();
+export default async function handler(req: any, res: any) {
+  // Vercel serverless functions handle body parsing automatically for JSON
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
 
-const app = express();
-app.use(express.json());
+  const { name, email, phone, cakeType, message } = req.body || {};
 
-// API Routes
-app.post("/api/order", async (req, res) => {
-  const { name, email, phone, cakeType, message } = req.body;
-
-  // Basic validation
   if (!name || !email) {
-    return res.status(400).json({ error: "Name and email are required" });
+    return res.status(400).json({ error: "Name and email are required fields" });
   }
 
   if (!process.env.RESEND_API_KEY) {
     console.error("Missing RESEND_API_KEY");
-    return res.status(500).json({ error: "Email service not configured. Please check environment variables." });
+    return res.status(500).json({ error: "Email service not configured (Missing API Key)" });
   }
 
-  const resend = new Resend(process.env.RESEND_API_KEY);
   const recipientEnv = process.env.RECIPIENT_EMAIL;
-  
   if (!recipientEnv) {
     console.error("Missing RECIPIENT_EMAIL");
     return res.status(500).json({ error: "Recipient email not configured. Please check environment variables." });
   }
 
-  // Support multiple recipients separated by commas
-  const recipients = recipientEnv.split(",").map(email => email.trim()).filter(Boolean);
-
-  // Resend requires a verified domain to send from anything other than onboarding@resend.dev
+  const resend = new Resend(process.env.RESEND_API_KEY);
   const fromEmail = process.env.FROM_EMAIL || "onboarding@resend.dev";
+  const recipients = recipientEnv.split(",").map(e => e.trim()).filter(Boolean);
 
   try {
     const { data, error } = await resend.emails.send({
       from: `Rainbow Cake <${fromEmail}>`,
       to: recipients,
-      replyTo: email, // This allows you to reply directly to the customer
+      replyTo: email,
       subject: `New Order Inquiry: ${name}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
@@ -74,53 +64,13 @@ app.post("/api/order", async (req, res) => {
     });
 
     if (error) {
-      console.error("Resend Error:", error);
-      return res.status(400).json({ error: error.message || "Failed to send email via Resend" });
+      console.error("Resend error:", error);
+      return res.status(400).json({ error: error.message || "Resend API error" });
     }
 
-    return res.status(200).json({ message: "Order sent successfully", id: data?.id });
+    return res.status(200).json({ message: "Inquiry sent successfully", id: data?.id });
   } catch (err: any) {
-    console.error("Server Error:", err);
-    return res.status(500).json({ error: "An internal error occurred", details: err.message });
-  }
-});
-
-// Setup static serving or Vite middleware
-async function setupFrontend() {
-  if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
-    try {
-      const { createServer: createViteServer } = await import("vite");
-      const vite = await createViteServer({
-        server: { middlewareMode: true },
-        appType: "spa",
-      });
-      app.use(vite.middlewares);
-    } catch (e) {
-      console.error("Failed to initialize Vite:", e);
-    }
-  } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"), (err) => {
-        if (err) {
-          res.status(404).send("Not Found");
-        }
-      });
-    });
+    console.error("Unhandled error:", err);
+    return res.status(500).json({ error: "Internal Server Error", message: err.message });
   }
 }
-
-// Start frontend setup
-setupFrontend();
-
-// Only listen if not running as a Vercel Function
-if (!process.env.VERCEL) {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
-  });
-}
-
-export default app;
-
