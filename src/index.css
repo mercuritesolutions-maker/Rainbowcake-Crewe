@@ -1,0 +1,47 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Cormorant Garamond", serif;
+  --font-sans: "DM Sans", sans-serif;
+
+  --color-brand-bg: #fdf8f3;
+  --color-brand-surface: #fff9f2;
+  --color-brand-ink: #1a1208;
+  --color-brand-accent: #c85a2a;
+  --color-brand-accent-light: #f4e2d4;
+  --color-brand-border: rgba(26, 18, 8, 0.08);
+
+  --radius-brand: 2px;
+}
+
+@layer base {
+  body {
+    @apply bg-brand-bg text-brand-ink font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display;
+  }
+}
+
+.noise-bg {
+  &::before {
+    content: "";
+    @apply fixed inset-0 pointer-events-none opacity-[0.03] z-[9999];
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  }
+}
+
+/* Kinetic Marquee */
+@keyframes scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
+
+.animate-scroll:hover {
+  animation-play-state: paused;
+}

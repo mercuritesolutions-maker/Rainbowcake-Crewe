@@ -1,0 +1,8 @@
+{
+  "name": "Rainbow Cake",
+  "description": "Artisan cake shop in Crewe, UK, specializing in custom cakes, wedding cakes, and daily baked goods.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
