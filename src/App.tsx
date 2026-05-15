@@ -27,7 +27,158 @@ function cn(...inputs: ClassValue[]) {
 
 // --- Components ---
 
-const Navbar = () => {
+const OrderModal = ({ isOpen, onClose, initialCakeType = "" }: { isOpen: boolean, onClose: () => void, initialCakeType?: string }) => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    cakeType: initialCakeType,
+    message: ""
+  });
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  useEffect(() => {
+    if (isOpen) setFormData(prev => ({ ...prev, cakeType: initialCakeType }));
+  }, [isOpen, initialCakeType]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+    try {
+      const response = await fetch('/api/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
+      if (response.ok) {
+        setStatus('success');
+        setTimeout(() => {
+          onClose();
+          setStatus('idle');
+          setFormData({ name: "", email: "", phone: "", cakeType: "", message: "" });
+        }, 3000);
+      } else {
+        setStatus('error');
+      }
+    } catch (error) {
+      setStatus('error');
+    }
+  };
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="absolute inset-0 bg-brand-ink/60 backdrop-blur-sm"
+          />
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            className="relative bg-brand-bg w-full max-w-lg rounded-sm shadow-2xl p-8 overflow-hidden"
+          >
+            <button onClick={onClose} className="absolute top-4 right-4 text-stone-400 hover:text-brand-ink">
+              <X size={24} />
+            </button>
+
+            <h3 className="text-3xl font-display mb-6">Place an Inquiry</h3>
+            
+            {status === 'success' ? (
+              <motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="py-12 text-center"
+              >
+                <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <CheckCircle size={32} weight="fill" />
+                </div>
+                <h4 className="text-xl font-display mb-2">Message Sent!</h4>
+                <p className="text-stone-500">We'll get back to you shortly to finalize your order.</p>
+              </motion.div>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold uppercase tracking-widest opacity-40">Your Name</label>
+                    <input 
+                      required
+                      className="w-full bg-brand-surface border border-brand-border p-3 focus:outline-none focus:border-brand-accent transition-colors"
+                      value={formData.name}
+                      onChange={e => setFormData({ ...formData, name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold uppercase tracking-widest opacity-40">Phone Number</label>
+                    <input 
+                      required
+                      type="tel"
+                      className="w-full bg-brand-surface border border-brand-border p-3 focus:outline-none focus:border-brand-accent transition-colors"
+                      value={formData.phone}
+                      onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold uppercase tracking-widest opacity-40">Email Address</label>
+                  <input 
+                    required
+                    type="email"
+                    className="w-full bg-brand-surface border border-brand-border p-3 focus:outline-none focus:border-brand-accent transition-colors"
+                    value={formData.email}
+                    onChange={e => setFormData({ ...formData, email: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold uppercase tracking-widest opacity-40">Interested In</label>
+                  <select 
+                    className="w-full bg-brand-surface border border-brand-border p-3 focus:outline-none focus:border-brand-accent transition-colors appearance-none"
+                    value={formData.cakeType}
+                    onChange={e => setFormData({ ...formData, cakeType: e.target.value })}
+                  >
+                    <option value="">Select a category</option>
+                    <option value="Birthday Cake">Birthday Cake</option>
+                    <option value="Wedding Cake">Wedding Cake</option>
+                    <option value="Slices/Cupcakes">Slices or Cupcakes</option>
+                    <option value="Custom Event">Custom Event</option>
+                  </select>
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-bold uppercase tracking-widest opacity-40">Message / Details</label>
+                  <textarea 
+                    rows={4}
+                    placeholder="Tell us about flavors, dates, or specific themes..."
+                    className="w-full bg-brand-surface border border-brand-border p-3 focus:outline-none focus:border-brand-accent transition-colors resize-none"
+                    value={formData.message}
+                    onChange={e => setFormData({ ...formData, message: e.target.value })}
+                  />
+                </div>
+                
+                {status === 'error' && <p className="text-xs text-red-500">Failed to send inquiry. Please try again.</p>}
+
+                <button 
+                  disabled={status === 'loading'}
+                  className="w-full bg-brand-accent text-white py-4 font-bold uppercase tracking-widest text-sm hover:bg-brand-ink transition-colors disabled:opacity-50"
+                >
+                  {status === 'loading' ? 'Sending...' : 'Send Inquiry'}
+                </button>
+              </form>
+            )}
+
+            {/* Subtle brand noise overlay inside modal */}
+            <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-[-1] noise-bg" />
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+};
+
+const Navbar = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -53,16 +204,24 @@ const Navbar = () => {
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-10">
-          {["Menu", "Custom Cakes", "About", "Visit"].map((item) => (
+          {[
+            { label: "Menu", href: "#menu" },
+            { label: "Custom Cakes", href: "#custom-cakes" },
+            { label: "About", href: "#about" },
+            { label: "Visit", href: "#visit" }
+          ].map((item) => (
             <a 
-              key={item} 
-              href={`#${item.toLowerCase().replace(' ', '-')}`} 
+              key={item.label} 
+              href={item.href} 
               className="text-sm font-medium text-stone-600 hover:text-brand-accent transition-colors"
             >
-              {item}
+              {item.label}
             </a>
           ))}
-          <button className="bg-brand-accent text-white px-6 py-2.5 rounded-sm text-sm font-medium shadow-sm hover:-translate-y-[1px] active:scale-[0.98] transition-all duration-300">
+          <button 
+            onClick={() => onOpenOrder()}
+            className="bg-brand-accent text-white px-6 py-2.5 rounded-sm text-sm font-medium shadow-sm hover:-translate-y-[1px] active:scale-[0.98] transition-all duration-300 pointer-events-auto cursor-pointer"
+          >
             Order Now
           </button>
         </div>
@@ -85,17 +244,28 @@ const Navbar = () => {
             exit={{ opacity: 0, y: -20 }}
             className="absolute top-full inset-x-0 bg-brand-surface border-b border-brand-border p-6 flex flex-col gap-6 md:hidden"
           >
-            {["Menu", "Custom Cakes", "About", "Visit"].map((item) => (
+            {[
+              { label: "Menu", href: "#menu" },
+              { label: "Custom Cakes", href: "#custom-cakes" },
+              { label: "About", href: "#about" },
+              { label: "Visit", href: "#visit" }
+            ].map((item) => (
               <a 
-                key={item} 
-                href={`#${item.toLowerCase().replace(' ', '-')}`} 
+                key={item.label} 
+                href={item.href} 
                 className="text-lg font-medium text-brand-ink"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                {item}
+                {item.label}
               </a>
             ))}
-            <button className="bg-brand-accent text-white w-full py-4 rounded-sm font-medium">
+            <button 
+              onClick={() => {
+                onOpenOrder();
+                setIsMobileMenuOpen(false);
+              }}
+              className="bg-brand-accent text-white w-full py-4 rounded-sm font-medium text-center"
+            >
               Order Now
             </button>
           </motion.div>
@@ -105,7 +275,7 @@ const Navbar = () => {
   );
 };
 
-const Hero = () => {
+const Hero = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
   return (
     <section className="min-h-[100dvh] pt-32 pb-16 px-6 md:px-10 overflow-hidden relative">
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
@@ -124,13 +294,19 @@ const Hero = () => {
             Artisan bakes from Crewe. We create joyful, bespoke cakes and daily treats that turn every moment into a celebration.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <button className="bg-brand-accent text-white px-8 py-4 rounded-sm flex items-center justify-center gap-2 group hover:-translate-y-1 transition-all">
+            <button 
+              onClick={() => onOpenOrder()}
+              className="bg-brand-accent text-white px-8 py-4 rounded-sm flex items-center justify-center gap-2 group hover:-translate-y-1 transition-all"
+            >
               Order Your Cake
               <ArrowRight className="group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="border border-brand-accent text-brand-accent px-8 py-4 rounded-sm hover:bg-brand-accent hover:text-white transition-all">
+            <a 
+              href="#menu"
+              className="border border-brand-accent text-brand-accent px-8 py-4 rounded-sm flex items-center justify-center hover:bg-brand-accent hover:text-white transition-all"
+            >
               See Our Menu
-            </button>
+            </a>
           </div>
         </motion.div>
 
@@ -196,8 +372,7 @@ const Marquee = () => {
     </div>
   );
 };
-
-const About = () => {
+const About = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
   return (
     <section id="about" className="py-24 px-6 md:px-10">
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
@@ -240,8 +415,11 @@ const About = () => {
                 From the crisp flutter of wedding tiers to the simple comfort of a morning cookie, our kitchen is a place of warmth, flour, and genuine artisanal care. We don't just bake cakes; we bake memories.
               </p>
             </div>
-            <button className="mt-10 inline-flex items-center gap-2 font-bold tracking-tight uppercase text-sm border-b-2 border-brand-accent pb-1 hover:text-brand-accent transition-colors">
-              Our Story <ArrowRight />
+            <button 
+              onClick={() => onOpenOrder()}
+              className="mt-10 inline-flex items-center gap-2 font-bold tracking-tight uppercase text-sm border-b-2 border-brand-accent pb-1 hover:text-brand-accent transition-colors"
+            >
+              Inquire Now <ArrowRight />
             </button>
           </div>
         </div>
@@ -250,7 +428,7 @@ const About = () => {
   );
 };
 
-const ProductCard = ({ title, description, price, image, className }: any) => {
+const ProductCard = ({ title, description, price, image, className, onOrder }: any) => {
   return (
     <motion.div 
       className={cn(
@@ -272,7 +450,10 @@ const ProductCard = ({ title, description, price, image, className }: any) => {
       <p className="text-sm text-stone-500 mb-6 line-clamp-2">{description}</p>
       <div className="flex items-center justify-between mt-auto">
         <span className="text-lg font-medium">from £{price}</span>
-        <button className="p-2 rounded-full border border-brand-accent text-brand-accent hover:bg-brand-accent hover:text-white transition-all">
+        <button 
+          onClick={() => onOrder(title)}
+          className="p-2 rounded-full border border-brand-accent text-brand-accent hover:bg-brand-accent hover:text-white transition-all"
+        >
           <ShoppingBag size={20} />
         </button>
       </div>
@@ -280,55 +461,124 @@ const ProductCard = ({ title, description, price, image, className }: any) => {
   );
 };
 
-const MenuGrid = () => {
+const MenuGrid = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
   const products = [
     {
       title: "Signature Birthday Cakes",
       description: "Baked with love and personalized for your special day. Available in a variety of flavors and themes.",
       price: "25",
       image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800",
-      className: "lg:col-span-7"
+      className: "lg:col-span-12 xl:col-span-7"
     },
     {
       title: "Signature Slices",
       description: "Perfectly portioned slices of our daily bakes. Try our Rummy Chocolate or seasonal favorites.",
       price: "3",
       image: "https://scontent.fceb1-1.fna.fbcdn.net/v/t39.30808-6/686336922_122128964427047824_4974757762857934377_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHz5xa5ykS59B67fMEDPiFPZdsOBM0cJp5l2w4EzRwmnj5-f8hlcOERDj1uUsp6o4uw6_V_9i8BA1NVJ2Za0qXK&_nc_ohc=ra9jHjUVqIMQ7kNvwHjBts5&_nc_oc=AdqTN9EUFaZRPWCYA5p1Mw4aCrePY94R0VIaxEHqr-PH560X51k34JMTM5RdNPx-Nd4&_nc_zt=23&_nc_ht=scontent.fceb1-1.fna&_nc_gid=M96DfZ0GlbCpf8tNdTDwrw&_nc_ss=7b2a8&oh=00_Af4kzpThw1rZ_mpZhde4tP0-HW9J3nO0lk5kwwLpuYSkHA&oe=6A0CD01E",
-      className: "lg:col-span-5"
+      className: "lg:col-span-6 xl:col-span-5"
     },
     {
       title: "Custom Wedding Cakes",
       description: "Elegant, multi-tiered creations tailored to your unique love story and floral inspirations.",
       price: "250",
       image: "https://scontent.fceb1-1.fna.fbcdn.net/v/t39.30808-6/635138963_122121958413047824_7655843915748301878_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeFwItnDY6GJvERa-hRP1Ki7NGtnVUby6I80a2dVRvLoj528AD5nL2Ju_BW5yXwQRz1eu0SlVBAztFMFGKrjprKn&_nc_ohc=oVwzgqp-6MEQ7kNvwHqeQrt&_nc_oc=AdpzK9mFnMS_zgGtJl32iCJ_jhVgBASQfTFpTkUcwgiQgPtGWtxQA-uxJWj-p0sleP4&_nc_zt=23&_nc_ht=scontent.fceb1-1.fna&_nc_gid=v-G04TvZVx3biFqF3Sj6xA&_nc_ss=7b2a8&oh=00_Af6wuXgjEYBQFmXkaSvgtwIRuU07aI9m-3SS7Z6FD2onNw&oe=6A0CEF3A",
-      className: "lg:col-span-5"
+      className: "lg:col-span-6 xl:col-span-5"
     },
     {
       title: "Artisan Cupcakes",
       description: "Fluffy bakes topped with our signature honeycomb buttercream and daily inspirations.",
       price: "3",
       image: "https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&q=80&w=800",
-      className: "lg:col-span-7"
+      className: "lg:col-span-12 xl:col-span-7"
     }
   ];
 
   return (
     <section id="menu" className="py-24 px-6 md:px-10 bg-brand-surface/40">
       <div className="max-w-[1400px] mx-auto text-left mb-16">
-        <h2 className="text-4xl md:text-6xl font-display mb-4">Our Signature Creations</h2>
-        <p className="text-stone-500 max-w-xl">Every piece is hand-crafted and baked daily using only the finest local ingredients.</p>
+        <h2 className="text-4xl md:text-6xl font-display mb-4 tracking-tight">Our Signature Creations</h2>
+        <p className="text-stone-500 max-w-xl text-lg">Every piece is hand-crafted and baked daily using only the finest local ingredients.</p>
       </div>
       
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
         {products.map((p, i) => (
-          <ProductCard key={i} {...p} />
+          <ProductCard key={i} {...p} onOrder={onOpenOrder} />
         ))}
       </div>
     </section>
   );
 };
 
-const OrderProcess = () => {
+const CustomCakesGallery = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
+  /**
+   * NOTE TO USER: To use your own images, please upload them to the project root 
+   * (e.g. as cake1.png) and update the URLs below.
+   */
+  const galleryImages = [
+    { 
+      url: "https://images.unsplash.com/photo-1535254973040-607b474cb80d?auto=format&fit=crop&q=80&w=800", 
+      alt: "Bespoke Celebration Cakes with Edible Art" 
+    },
+    { 
+      url: "https://images.unsplash.com/photo-1535141192574-5d4897c12636?auto=format&fit=crop&q=80&w=800", 
+      alt: "Elegant Floral Dedications for Special Birthdays" 
+    },
+    { 
+      url: "https://images.unsplash.com/photo-1621303837174-89787a7d4729?auto=format&fit=crop&q=80&w=800", 
+      alt: "Handcrafted Toppers and Delicate Detail" 
+    },
+    { 
+      url: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=800", 
+      alt: "Themed Masterpieces for Memorable Moments" 
+    },
+  ];
+
+  return (
+    <section id="custom-cakes" className="py-24 px-6 md:px-10 overflow-hidden bg-brand-surface">
+      <div className="max-w-[1400px] mx-auto">
+        <div className="flex flex-col md:flex-row items-baseline justify-between gap-6 mb-16 border-b border-brand-border pb-8">
+          <h2 className="text-4xl md:text-6xl font-display tracking-tight">Our Cake Gallery</h2>
+          <p className="text-brand-accent font-medium tracking-widest uppercase text-xs">A peek into our kitchen</p>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          {galleryImages.map((img, i) => (
+            <motion.div 
+              key={i}
+              className="aspect-[3/4] group relative overflow-hidden rounded-sm bg-brand-accent-light shadow-lg"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.15 }}
+              viewport={{ once: true }}
+            >
+              <img 
+                src={img.url} 
+                alt={img.alt} 
+                className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-brand-ink/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center p-8 text-center backdrop-blur-[2px]">
+                <div className="w-12 h-[1px] bg-brand-accent mb-4 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
+                <p className="text-white font-display text-xl leading-relaxed">{img.alt}</p>
+                <div className="w-12 h-[1px] bg-brand-accent mt-4 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+        
+        <div className="mt-20 text-center">
+          <div className="inline-block relative">
+            <p className="text-stone-400 italic font-display text-3xl md:text-4xl px-12">
+              "Every cake tells a unique story. What's yours?"
+            </p>
+            <div className="absolute top-0 left-0 text-brand-accent/20 text-8xl font-display -translate-y-6 -translate-x-4">“</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const OrderProcess = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
   const steps = [
     {
       title: "Choose Your Cake",
@@ -337,7 +587,7 @@ const OrderProcess = () => {
     },
     {
       title: "Get in Touch",
-      desc: "Call us or message on Instagram to discuss details.",
+      desc: "Fill our inquiry form or message on Instagram to discuss details.",
       icon: <PhoneCall size={40} />
     },
     {
@@ -350,7 +600,15 @@ const OrderProcess = () => {
   return (
     <section className="py-24 px-6 md:px-10 overflow-hidden">
       <div className="max-w-[1400px] mx-auto">
-        <h2 className="text-4xl md:text-6xl font-display mb-16">How to get your slice</h2>
+        <div className="flex flex-col md:flex-row items-baseline justify-between gap-8 mb-16">
+          <h2 className="text-4xl md:text-6xl font-display">How to get your slice</h2>
+          <button 
+            onClick={() => onOpenOrder()}
+            className="group flex items-center gap-2 text-brand-accent font-bold uppercase tracking-widest text-sm border-b-2 border-brand-accent/20 hover:border-brand-accent pb-1 transition-all"
+          >
+            Start Your Order <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+          </button>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
           {/* Connecting line */}
@@ -462,8 +720,19 @@ const Contact = () => {
 
             <div className="pt-6 border-t border-brand-border">
               <p className="text-sm font-bold uppercase tracking-widest text-brand-accent mb-4">Available on</p>
-              <div className="bg-emerald-500 text-white inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold">
+              <div className="bg-emerald-500 text-white inline-flex items-center gap-2 px-6 py-2 rounded-full font-bold mb-6">
                 Deliveroo
+              </div>
+              <div>
+                <a 
+                  href="https://www.google.com/maps/dir//90+Nantwich+Rd,+Crewe+CW2+6AT"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 bg-brand-ink text-white px-8 py-4 rounded-sm hover:bg-brand-accent transition-all"
+                >
+                  <MapPin weight="fill" />
+                  Get Directions
+                </a>
               </div>
             </div>
           </div>
@@ -523,17 +792,32 @@ const Footer = () => {
 // --- Main App ---
 
 export default function App() {
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [selectedCakeType, setSelectedCakeType] = useState("");
+
+  const openOrder = (type: string = "") => {
+    setSelectedCakeType(type);
+    setIsOrderModalOpen(true);
+  };
+
   return (
     <div className="noise-bg selection:bg-brand-accent selection:text-white">
-      <Navbar />
-      <Hero />
+      <Navbar onOpenOrder={openOrder} />
+      <Hero onOpenOrder={openOrder} />
       <Marquee />
-      <About />
-      <MenuGrid />
-      <OrderProcess />
+      <About onOpenOrder={openOrder} />
+      <MenuGrid onOpenOrder={openOrder} />
+      <CustomCakesGallery onOpenOrder={openOrder} />
+      <OrderProcess onOpenOrder={openOrder} />
       <Testimonials />
       <Contact />
       <Footer />
+      
+      <OrderModal 
+        isOpen={isOrderModalOpen} 
+        onClose={() => setIsOrderModalOpen(false)} 
+        initialCakeType={selectedCakeType}
+      />
     </div>
   );
 }
