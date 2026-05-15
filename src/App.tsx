@@ -31,11 +31,11 @@ function cn(...inputs: ClassValue[]) {
 const MENU_ITEMS = [
   {
     id: "bday-cake",
-    title: "Signature Birthday Cake",
+    title: "Signature Celebration Cake",
     description: "Multi-layered sponge with buttercream. Customizable theme.",
     price: 25,
     category: "Cakes",
-    image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1535141192574-5d4897c12636?auto=format&fit=crop&q=80&w=800",
     tags: ["Popular", "Bespoke"]
   },
   {
@@ -44,7 +44,7 @@ const MENU_ITEMS = [
     description: "A perfect trial of our best-selling daily bakes.",
     price: 3,
     category: "Treats",
-    image: "https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&q=80&w=800",
     tags: ["Daily Bakes"]
   },
   {
@@ -53,7 +53,7 @@ const MENU_ITEMS = [
     description: "Multitiered elegance tailored to your reception theme.",
     price: 250,
     category: "Specialty",
-    image: "https://images.unsplash.com/photo-1527477396000-e27163b481c2?auto=format&fit=crop&q=80&w=800",
+    image: "https://images.unsplash.com/photo-1513137330435-88d4076a592c?auto=format&fit=crop&q=80&w=800",
     tags: ["Floral", "Premium"]
   },
   {
@@ -707,19 +707,19 @@ const CustomCakesGallery = ({ onOpenOrder }: { onOpenOrder: (type?: string) => v
    */
   const galleryImages = [
     { 
-      url: "https://images.unsplash.com/photo-1535254973040-607b474cb80d?auto=format&fit=crop&q=80&w=800", 
+      url: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&q=80&w=800", 
       alt: "Bespoke Celebration Cakes with Edible Art" 
     },
     { 
-      url: "https://images.unsplash.com/photo-1535141192574-5d4897c12636?auto=format&fit=crop&q=80&w=800", 
+      url: "https://images.unsplash.com/photo-1562233237-10d556aee0c3?auto=format&fit=crop&q=80&w=800", 
       alt: "Elegant Floral Dedications for Special Birthdays" 
     },
     { 
-      url: "https://images.unsplash.com/photo-1621303837174-89787a7d4729?auto=format&fit=crop&q=80&w=800", 
+      url: "https://images.unsplash.com/photo-1506459225024-1428097a7e18?auto=format&fit=crop&q=80&w=800", 
       alt: "Handcrafted Toppers and Delicate Detail" 
     },
     { 
-      url: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&q=80&w=800", 
+      url: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&q=80&w=800", 
       alt: "Themed Masterpieces for Memorable Moments" 
     },
   ];
