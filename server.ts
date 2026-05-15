@@ -24,17 +24,19 @@ app.post("/api/order", async (req, res) => {
   }
 
   const resend = new Resend(process.env.RESEND_API_KEY);
-  const recipient = process.env.RECIPIENT_EMAIL || "le.advena08@gmail.com";
-  
+  const recipientEnv = process.env.RECIPIENT_EMAIL || "le.advena08@gmail.com";
+  // Support multiple recipients separated by commas
+  const recipients = recipientEnv.split(",").map(email => email.trim()).filter(Boolean);
+
   // Resend requires a verified domain to send from anything other than onboarding@resend.dev
-  // We'll use a configurable variable with a safe fallback.
   const fromEmail = process.env.FROM_EMAIL || "onboarding@resend.dev";
 
   try {
     const { data, error } = await resend.emails.send({
       from: `Rainbow Cake <${fromEmail}>`,
       to: [email],
-      cc: [recipient],
+      cc: recipients,
+      replyTo: "cesaresmero2@gmail.com",
       subject: `Order Confirmation: Your Rainbow Cake Inquiry`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
@@ -50,6 +52,7 @@ app.post("/api/order", async (req, res) => {
               <p style="margin: 5px 0;"><strong>Category:</strong> ${cakeType || "Not specified"}</p>
               <p style="margin: 5px 0;"><strong>Details:</strong></p>
               <p style="margin: 5px 0; white-space: pre-line; font-style: italic;">${message || "No additional details provided."}</p>
+              ${phone ? `<p style="margin: 10px 0 0 0;"><strong>Phone:</strong> ${phone}</p>` : ""}
             </div>
 
             <p><strong>Next Steps:</strong></p>
