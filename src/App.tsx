@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
-import { 
-  ShoppingBag, 
-  MapPin, 
-  Phone, 
-  InstagramLogo, 
-  FacebookLogo, 
-  List, 
-  X, 
-  Star, 
+import {
+  ShoppingBag,
+  MapPin,
+  Phone,
+  InstagramLogo,
+  FacebookLogo,
+  List,
+  X,
+  Star,
   ArrowRight,
   Cake,
   Cookie,
@@ -53,7 +53,7 @@ const MENU_ITEMS = [
     description: "Multitiered elegance tailored to your reception theme.",
     price: 250,
     category: "Specialty",
-    image: "https://images.unsplash.com/photo-1513137330435-88d4076a592c?auto=format&fit=crop&q=80&w=800",
+    image: "https://scontent.fceb1-5.fna.fbcdn.net/v/t39.30808-6/691336135_122129291517047824_7478467197208633053_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=110&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeGCaAuROAI41zTlZHIowZzDdMGhF0ugkz10waEXS6CTPcQqkZmkwfS6VPVsxd7bKWUMzkTFQgA865HjigUKJYnT&_nc_ohc=T5v2s_1hLpsQ7kNvwEab1mA&_nc_oc=Ado2aRnyVSQ_N-Te9dHxAkmO31um4F-KePbhHOA2gqeN2EjuXQS2A-7r92dRdJ_wDro&_nc_zt=23&_nc_ht=scontent.fceb1-5.fna&_nc_gid=ibt4KbzvDNIW0QHI9d2fRA&_nc_ss=7b2a8&oh=00_Af63PE3YahW4XSh2RmEFDMO_ACFMvNKLChn9lgixF84_Fg&oe=6A0CF0BD",
     tags: ["Floral", "Premium"]
   },
   {
@@ -86,17 +86,17 @@ interface CartItem {
 
 // --- Components ---
 
-const CartSidebar = ({ 
-  isOpen, 
-  onClose, 
-  cart, 
-  onUpdateQuantity, 
+const CartSidebar = ({
+  isOpen,
+  onClose,
+  cart,
+  onUpdateQuantity,
   onRemove,
   onCheckout
-}: { 
-  isOpen: boolean; 
-  onClose: () => void; 
-  cart: CartItem[]; 
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  cart: CartItem[];
   onUpdateQuantity: (id: string, delta: number) => void;
   onRemove: (id: string) => void;
   onCheckout: () => void;
@@ -107,14 +107,14 @@ const CartSidebar = ({
     <AnimatePresence>
       {isOpen && (
         <>
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="fixed inset-0 bg-brand-ink/40 backdrop-blur-sm z-[200]"
           />
-          <motion.div 
+          <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -170,7 +170,7 @@ const CartSidebar = ({
                   <span>Total Amount</span>
                   <span className="font-sans font-bold">£{total}</span>
                 </div>
-                <button 
+                <button
                   onClick={onCheckout}
                   className="w-full bg-brand-accent text-white py-4 font-bold uppercase tracking-widest text-sm hover:bg-brand-ink transition-colors flex items-center justify-center gap-2"
                 >
@@ -185,14 +185,14 @@ const CartSidebar = ({
   );
 };
 
-const OrderModal = ({ 
-  isOpen, 
-  onClose, 
-  initialCakeType = "", 
-  cartSummary = "" 
-}: { 
-  isOpen: boolean; 
-  onClose: () => void; 
+const OrderModal = ({
+  isOpen,
+  onClose,
+  initialCakeType = "",
+  cartSummary = ""
+}: {
+  isOpen: boolean;
+  onClose: () => void;
   initialCakeType?: string;
   cartSummary?: string;
 }) => {
@@ -207,8 +207,8 @@ const OrderModal = ({
 
   useEffect(() => {
     if (isOpen) {
-      setFormData(prev => ({ 
-        ...prev, 
+      setFormData(prev => ({
+        ...prev,
         cakeType: initialCakeType || (cartSummary ? "Cart Order" : ""),
         message: cartSummary ? `Order Summary:\n${cartSummary}\n\nAdditional details:` : prev.message
       }));
@@ -243,14 +243,14 @@ const OrderModal = ({
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-6">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="absolute inset-0 bg-brand-ink/60 backdrop-blur-sm"
           />
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -264,9 +264,9 @@ const OrderModal = ({
             <p className="text-stone-500 text-sm mb-8 leading-relaxed">
               We'll review your details and contact you within 24 hours to confirm everything.
             </p>
-            
+
             {status === 'success' ? (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="py-12 text-center"
@@ -282,7 +282,7 @@ const OrderModal = ({
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
                     <label className="text-xs font-bold uppercase tracking-widest opacity-40">Your Name</label>
-                    <input 
+                    <input
                       required
                       className="w-full bg-brand-surface border border-brand-border p-3 focus:outline-none focus:border-brand-accent transition-colors"
                       value={formData.name}
@@ -291,7 +291,7 @@ const OrderModal = ({
                   </div>
                   <div className="space-y-1">
                     <label className="text-xs font-bold uppercase tracking-widest opacity-40">Phone Number</label>
-                    <input 
+                    <input
                       required
                       type="tel"
                       className="w-full bg-brand-surface border border-brand-border p-3 focus:outline-none focus:border-brand-accent transition-colors"
@@ -302,7 +302,7 @@ const OrderModal = ({
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-bold uppercase tracking-widest opacity-40">Email Address</label>
-                  <input 
+                  <input
                     required
                     type="email"
                     className="w-full bg-brand-surface border border-brand-border p-3 focus:outline-none focus:border-brand-accent transition-colors"
@@ -311,13 +311,13 @@ const OrderModal = ({
                   />
                 </div>
                 {cartSummary && (
-                   <div className="p-3 bg-brand-surface border border-brand-border rounded-sm text-xs font-mono opacity-60 max-h-32 overflow-y-auto">
-                     {cartSummary}
-                   </div>
+                  <div className="p-3 bg-brand-surface border border-brand-border rounded-sm text-xs font-mono opacity-60 max-h-32 overflow-y-auto">
+                    {cartSummary}
+                  </div>
                 )}
                 <div className="space-y-1">
                   <label className="text-xs font-bold uppercase tracking-widest opacity-40">Order Category</label>
-                  <select 
+                  <select
                     className="w-full bg-brand-surface border border-brand-border p-3 focus:outline-none focus:border-brand-accent transition-colors appearance-none"
                     value={formData.cakeType}
                     onChange={e => setFormData({ ...formData, cakeType: e.target.value })}
@@ -332,7 +332,7 @@ const OrderModal = ({
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-bold uppercase tracking-widest opacity-40">Notes / Preferences</label>
-                  <textarea 
+                  <textarea
                     rows={cartSummary ? 2 : 4}
                     placeholder="Tell us about flavors, dates, or specific themes..."
                     className="w-full bg-brand-surface border border-brand-border p-3 focus:outline-none focus:border-brand-accent transition-colors resize-none"
@@ -340,10 +340,10 @@ const OrderModal = ({
                     onChange={e => setFormData({ ...formData, message: e.target.value })}
                   />
                 </div>
-                
+
                 {status === 'error' && <p className="text-xs text-red-500">Failed to send inquiry. Please try again.</p>}
 
-                <button 
+                <button
                   disabled={status === 'loading'}
                   className="w-full bg-brand-accent text-white py-4 font-bold uppercase tracking-widest text-sm hover:bg-brand-ink transition-colors disabled:opacity-50"
                 >
@@ -360,11 +360,11 @@ const OrderModal = ({
   );
 };
 
-const Navbar = ({ 
-  onOpenOrder, 
-  onOpenCart, 
-  cartCount 
-}: { 
+const Navbar = ({
+  onOpenOrder,
+  onOpenCart,
+  cartCount
+}: {
   onOpenOrder: (type?: string) => void;
   onOpenCart: () => void;
   cartCount: number;
@@ -379,11 +379,11 @@ const Navbar = ({
   }, []);
 
   return (
-    <nav 
+    <nav
       className={cn(
         "fixed top-0 inset-x-0 z-[100] transition-all duration-500 py-6",
-        isScrolled 
-          ? "bg-brand-surface/80 backdrop-blur-md border-b border-brand-border py-4 shadow-sm" 
+        isScrolled
+          ? "bg-brand-surface/80 backdrop-blur-md border-b border-brand-border py-4 shadow-sm"
           : "bg-transparent"
       )}
     >
@@ -400,16 +400,16 @@ const Navbar = ({
             { label: "About", href: "#about" },
             { label: "Visit", href: "#visit" }
           ].map((item) => (
-            <a 
-              key={item.label} 
-              href={item.href} 
+            <a
+              key={item.label}
+              href={item.href}
               className="text-sm font-medium text-stone-600 hover:text-brand-accent transition-colors"
             >
               {item.label}
             </a>
           ))}
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={onOpenCart}
               className="relative p-2 text-brand-ink hover:text-brand-accent transition-colors"
             >
@@ -420,7 +420,7 @@ const Navbar = ({
                 </span>
               )}
             </button>
-            <button 
+            <button
               onClick={() => onOpenOrder()}
               className="bg-brand-accent text-white px-6 py-2.5 rounded-sm text-sm font-medium shadow-sm hover:-translate-y-[1px] active:scale-[0.98] transition-all duration-300 pointer-events-auto cursor-pointer"
             >
@@ -439,7 +439,7 @@ const Navbar = ({
               </span>
             )}
           </button>
-          <button 
+          <button
             className="text-brand-ink"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
@@ -462,16 +462,16 @@ const Navbar = ({
               { label: "About", href: "#about" },
               { label: "Visit", href: "#visit" }
             ].map((item) => (
-              <a 
-                key={item.label} 
-                href={item.href} 
+              <a
+                key={item.label}
+                href={item.href}
                 className="text-lg font-medium text-brand-ink"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 {item.label}
               </a>
             ))}
-            <button 
+            <button
               onClick={() => {
                 onOpenOrder();
                 setIsMobileMenuOpen(false);
@@ -492,7 +492,7 @@ const Hero = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
     <section className="min-h-[100dvh] pt-32 pb-16 px-6 md:px-10 overflow-hidden relative">
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
         {/* Left Content */}
-        <motion.div 
+        <motion.div
           className="lg:col-span-6"
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
@@ -506,14 +506,14 @@ const Hero = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
             Artisan bakes from Crewe. We create joyful, bespoke cakes and daily treats that turn every moment into a celebration.
           </p>
           <div className="flex flex-col sm:flex-row gap-4">
-            <button 
+            <button
               onClick={() => onOpenOrder()}
               className="bg-brand-accent text-white px-8 py-4 rounded-sm flex items-center justify-center gap-2 group hover:-translate-y-1 transition-all"
             >
               Order Your Cake
               <ArrowRight className="group-hover:translate-x-1 transition-transform" />
             </button>
-            <a 
+            <a
               href="#menu"
               className="border border-brand-accent text-brand-accent px-8 py-4 rounded-sm flex items-center justify-center hover:bg-brand-accent hover:text-white transition-all"
             >
@@ -524,33 +524,33 @@ const Hero = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
 
         {/* Right Images */}
         <div className="lg:col-span-6 relative h-[500px] md:h-[600px]">
-          <motion.div 
+          <motion.div
             className="absolute top-0 right-0 w-3/4 h-3/4 rounded-sm overflow-hidden shadow-2xl z-10"
             initial={{ opacity: 0, y: 50, rotate: 2 }}
             animate={{ opacity: 1, y: 0, rotate: -2 }}
             transition={{ delay: 0.3, duration: 1 }}
             whileHover={{ scale: 1.02, rotate: 0 }}
           >
-            <img 
-              src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800" 
+            <img
+              src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800"
               alt="Artisan Chocolate Cake"
               className="w-full h-full object-cover"
             />
           </motion.div>
-          <motion.div 
+          <motion.div
             className="absolute bottom-0 left-0 w-1/2 h-1/2 rounded-sm overflow-hidden shadow-xl z-20 border-8 border-brand-surface"
             initial={{ opacity: 0, y: 100, x: -50 }}
             animate={{ opacity: 1, y: 0, x: 0 }}
             transition={{ delay: 0.5, duration: 1 }}
             whileHover={{ scale: 1.05 }}
           >
-            <img 
-              src="https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&q=80&w=800" 
+            <img
+              src="https://images.unsplash.com/photo-1550617931-e17a7b70dce2?auto=format&fit=crop&q=80&w=800"
               alt="Delicate Cupcakes"
               className="w-full h-full object-cover"
             />
           </motion.div>
-          
+
           {/* Accent decoration */}
           <div className="absolute top-1/2 right-1/2 w-40 h-40 bg-brand-accent/5 rounded-full blur-3xl -z-10" />
         </div>
@@ -561,18 +561,18 @@ const Hero = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
 
 const Marquee = () => {
   const items = [
-    "Custom Cakes", "Wedding Cakes", "Birthday Cakes", 
+    "Custom Cakes", "Wedding Cakes", "Birthday Cakes",
     "Cupcakes", "Cookies", "Baptism Cakes", "Daily Bakes"
   ];
-  
+
   return (
     <div className="bg-brand-ink py-8 overflow-hidden border-y border-brand-border/10">
       <div className="flex whitespace-nowrap animate-scroll">
         {[...Array(4)].map((_, i) => (
           <div key={i} className="flex items-center gap-12 px-6">
             {items.map((item, idx) => (
-              <span 
-                key={idx} 
+              <span
+                key={idx}
                 className="text-brand-surface font-display text-3xl md:text-4xl italic lowercase"
               >
                 {item} <span className="mx-6 opacity-30 text-white leading-none">·</span>
@@ -590,14 +590,14 @@ const About = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
         <div className="lg:col-span-5 order-2 lg:order-1">
           <div className="relative">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               className="aspect-[4/5] rounded-sm overflow-hidden"
             >
-              <img 
-                src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=800" 
+              <img
+                src="https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&q=80&w=800"
                 alt="Baker at work"
                 className="w-full h-full object-cover"
               />
@@ -613,7 +613,7 @@ const About = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
             </div>
           </div>
         </div>
-        
+
         <div className="lg:col-span-7 order-1 lg:order-2">
           <div className="max-w-xl">
             <h2 className="text-4xl md:text-6xl font-display leading-tight mb-8">
@@ -627,7 +627,7 @@ const About = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
                 From the crisp flutter of wedding tiers to the simple comfort of a morning cookie, our kitchen is a place of warmth, flour, and genuine artisanal care. We don't just bake cakes; we bake memories.
               </p>
             </div>
-            <button 
+            <button
               onClick={() => onOpenOrder()}
               className="mt-10 inline-flex items-center gap-2 font-bold tracking-tight uppercase text-sm border-b-2 border-brand-accent pb-1 hover:text-brand-accent transition-colors"
             >
@@ -642,7 +642,7 @@ const About = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
 
 const ProductCard = ({ item, onOrder, onAddToCart }: any) => {
   return (
-    <motion.div 
+    <motion.div
       className={cn(
         "group relative bg-brand-surface border border-brand-border p-6 rounded-sm overflow-hidden hover:border-brand-accent/50 transition-colors duration-500",
         item.className
@@ -652,8 +652,8 @@ const ProductCard = ({ item, onOrder, onAddToCart }: any) => {
       viewport={{ once: true }}
     >
       <div className="aspect-[16/10] mb-6 overflow-hidden rounded-sm">
-        <img 
-          src={item.image} 
+        <img
+          src={item.image}
           alt={item.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
         />
@@ -670,7 +670,7 @@ const ProductCard = ({ item, onOrder, onAddToCart }: any) => {
       <div className="flex items-center justify-between mt-auto">
         <span className="text-lg font-medium">from £{item.price}</span>
         <div className="flex items-center gap-2">
-          <button 
+          <button
             onClick={() => onAddToCart(item)}
             className="flex items-center gap-2 bg-brand-accent text-white px-4 py-2 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-brand-ink transition-colors"
           >
@@ -690,7 +690,7 @@ const MenuGrid = ({ onOpenOrder, onAddToCart }: { onOpenOrder: (type?: string) =
         <h2 className="text-4xl md:text-6xl font-display mb-4 tracking-tight">Our Signature Creations</h2>
         <p className="text-stone-500 max-w-xl text-lg">Every piece is hand-crafted and baked daily using only the finest local ingredients.</p>
       </div>
-      
+
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {MENU_ITEMS.map((item, i) => (
           <ProductCard key={item.id} item={item} onOrder={onOpenOrder} onAddToCart={onAddToCart} />
@@ -706,21 +706,21 @@ const CustomCakesGallery = ({ onOpenOrder }: { onOpenOrder: (type?: string) => v
    * (e.g. as cake1.png) and update the URLs below.
    */
   const galleryImages = [
-    { 
-      url: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&q=80&w=800", 
-      alt: "Bespoke Celebration Cakes with Edible Art" 
+    {
+      url: "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&q=80&w=800",
+      alt: "Bespoke Celebration Cakes with Edible Art"
     },
-    { 
-      url: "https://images.unsplash.com/photo-1562233237-10d556aee0c3?auto=format&fit=crop&q=80&w=800", 
-      alt: "Elegant Floral Dedications for Special Birthdays" 
+    {
+      url: "https://scontent.fceb1-1.fna.fbcdn.net/v/t39.30808-6/692778127_122129292753047824_5735866466609078329_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeG3n0CBTeNWJKzLob546eIaKUSM3KGcMKwpRIzcoZwwrLksZSrf7fCG6gU9LBxqWXZYbXLtGpzZbLoFy5Up1Zmb&_nc_ohc=PNzdSUCaw_sQ7kNvwGLUJu7&_nc_oc=AdqaGYLRTq4SDzy9GKsvOhYEGZkmwXGlS5rteiUYz5YDVSfTWcEmYMqWQshBnrzmAdk&_nc_zt=23&_nc_ht=scontent.fceb1-1.fna&_nc_gid=1AFIV7ggbDqPlYcKYAB8Xw&_nc_ss=7b2a8&oh=00_Af6WSEF4e36QlgDg4jF9jIbZE3m00UIciGccOLh8FXMLuQ&oe=6A0D08DE",
+      alt: "Elegant Floral Dedications for Special Birthdays"
     },
-    { 
-      url: "https://images.unsplash.com/photo-1506459225024-1428097a7e18?auto=format&fit=crop&q=80&w=800", 
-      alt: "Handcrafted Toppers and Delicate Detail" 
+    {
+      url: "https://images.unsplash.com/photo-1506459225024-1428097a7e18?auto=format&fit=crop&q=80&w=800",
+      alt: "Handcrafted Toppers and Delicate Detail"
     },
-    { 
-      url: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&q=80&w=800", 
-      alt: "Themed Masterpieces for Memorable Moments" 
+    {
+      url: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&q=80&w=800",
+      alt: "Themed Masterpieces for Memorable Moments"
     },
   ];
 
@@ -731,10 +731,10 @@ const CustomCakesGallery = ({ onOpenOrder }: { onOpenOrder: (type?: string) => v
           <h2 className="text-4xl md:text-6xl font-display tracking-tight">Our Cake Gallery</h2>
           <p className="text-brand-accent font-medium tracking-widest uppercase text-xs">A peek into our kitchen</p>
         </div>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {galleryImages.map((img, i) => (
-            <motion.div 
+            <motion.div
               key={i}
               className="aspect-[3/4] group relative overflow-hidden rounded-sm bg-brand-accent-light shadow-lg"
               initial={{ opacity: 0, y: 30 }}
@@ -742,9 +742,9 @@ const CustomCakesGallery = ({ onOpenOrder }: { onOpenOrder: (type?: string) => v
               transition={{ delay: i * 0.15 }}
               viewport={{ once: true }}
             >
-              <img 
-                src={img.url} 
-                alt={img.alt} 
+              <img
+                src={img.url}
+                alt={img.alt}
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-brand-ink/60 opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col items-center justify-center p-8 text-center backdrop-blur-[2px]">
@@ -755,7 +755,7 @@ const CustomCakesGallery = ({ onOpenOrder }: { onOpenOrder: (type?: string) => v
             </motion.div>
           ))}
         </div>
-        
+
         <div className="mt-20 text-center">
           <div className="inline-block relative">
             <p className="text-stone-400 italic font-display text-3xl md:text-4xl px-12">
@@ -793,20 +793,20 @@ const OrderProcess = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void })
       <div className="max-w-[1400px] mx-auto">
         <div className="flex flex-col md:flex-row items-baseline justify-between gap-8 mb-16">
           <h2 className="text-4xl md:text-6xl font-display">How to get your slice</h2>
-          <button 
+          <button
             onClick={() => onOpenOrder()}
             className="group flex items-center gap-2 text-brand-accent font-bold uppercase tracking-widest text-sm border-b-2 border-brand-accent/20 hover:border-brand-accent pb-1 transition-all"
           >
             Start Your Order <ArrowRight className="group-hover:translate-x-1 transition-transform" />
           </button>
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12 relative">
           {/* Connecting line */}
           <div className="hidden md:block absolute top-[45px] left-[10%] right-[10%] h-[1px] bg-brand-accent/20 -z-10" />
-          
+
           {steps.map((step, i) => (
-            <motion.div 
+            <motion.div
               key={i}
               className="group"
               initial={{ opacity: 0, scale: 0.9 }}
@@ -817,7 +817,7 @@ const OrderProcess = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void })
               <div className="w-20 h-20 bg-brand-accent-light rounded-full flex items-center justify-center text-brand-accent mb-8 group-hover:scale-110 transition-transform">
                 {step.icon}
               </div>
-              <h3 className="text-2xl font-display mb-4">0{i+1}. {step.title}</h3>
+              <h3 className="text-2xl font-display mb-4">0{i + 1}. {step.title}</h3>
               <p className="text-stone-500 max-w-[250px]">{step.desc}</p>
             </motion.div>
           ))}
@@ -845,8 +845,8 @@ const Testimonials = () => {
         {[...Array(2)].map((_, i) => (
           <div key={i} className="flex gap-8">
             {reviews.map((r, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className="inline-block w-[350px] whitespace-normal bg-white/5 backdrop-blur-md border border-white/10 p-8 rounded-sm"
               >
                 <div className="flex gap-1 mb-4 text-brand-accent">
@@ -872,7 +872,7 @@ const Contact = () => {
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16">
         <div className="lg:col-span-5">
           <h2 className="text-4xl md:text-6xl font-display mb-12">Visit Our Shop</h2>
-          
+
           <div className="space-y-10">
             <div className="flex gap-6">
               <div className="text-brand-accent"><MapPin size={32} /></div>
@@ -881,7 +881,7 @@ const Contact = () => {
                 <p className="text-stone-500">90 Nantwich Road, Crewe<br />CW2 6AT, United Kingdom</p>
               </div>
             </div>
-            
+
             <div className="flex gap-6">
               <div className="text-brand-accent"><Phone size={32} /></div>
               <div>
@@ -915,7 +915,7 @@ const Contact = () => {
                 Deliveroo
               </div>
               <div>
-                <a 
+                <a
                   href="https://www.google.com/maps/dir//90+Nantwich+Rd,+Crewe+CW2+6AT"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -930,13 +930,13 @@ const Contact = () => {
         </div>
 
         <div className="lg:col-span-7 h-[500px] rounded-sm overflow-hidden shadow-xl grayscale-[0.5] hover:grayscale-0 transition-all duration-700">
-          <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2402.668725841459!2d-2.4385150232497643!3d53.08985169389278!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487a5ced8736365f%3A0xe54d3d3a088e7b95!2s90%20Nantwich%20Rd%2C%20Crewe%20CW2%206AT!5e0!3m2!1sen!2suk!4v1715760000000!5m2!1sen!2suk" 
-            width="100%" 
-            height="100%" 
-            style={{ border: 0 }} 
-            allowFullScreen 
-            loading="lazy" 
+          <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2402.668725841459!2d-2.4385150232497643!3d53.08985169389278!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x487a5ced8736365f%3A0xe54d3d3a088e7b95!2s90%20Nantwich%20Rd%2C%20Crewe%20CW2%206AT!5e0!3m2!1sen!2suk!4v1715760000000!5m2!1sen!2suk"
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            allowFullScreen
+            loading="lazy"
           />
         </div>
       </div>
@@ -952,7 +952,7 @@ const Footer = () => {
           <h3 className="text-4xl font-display mb-6 tracking-tight">Rainbow Cake</h3>
           <p className="text-lg opacity-60 italic font-display max-w-sm">"Baked with Love, Made to Shine"</p>
         </div>
-        
+
         <div>
           <h5 className="text-xs font-bold uppercase tracking-widest mb-6 opacity-40">Navigate</h5>
           <ul className="space-y-4 text-sm font-medium">
@@ -1005,7 +1005,7 @@ export default function App() {
   };
 
   const updateQuantity = (id: string, delta: number) => {
-    setCart(prev => prev.map(item => 
+    setCart(prev => prev.map(item =>
       item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
     ));
   };
@@ -1020,8 +1020,8 @@ export default function App() {
 
   return (
     <div className="noise-bg selection:bg-brand-accent selection:text-white">
-      <Navbar 
-        onOpenOrder={openOrder} 
+      <Navbar
+        onOpenOrder={openOrder}
         onOpenCart={() => setIsCartOpen(true)}
         cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
       />
@@ -1034,8 +1034,8 @@ export default function App() {
       <Testimonials />
       <Contact />
       <Footer />
-      
-      <CartSidebar 
+
+      <CartSidebar
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cart={cart}
@@ -1047,9 +1047,9 @@ export default function App() {
         }}
       />
 
-      <OrderModal 
-        isOpen={isOrderModalOpen} 
-        onClose={() => setIsOrderModalOpen(false)} 
+      <OrderModal
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
         initialCakeType={selectedCakeType}
         cartSummary={cartSummary}
       />
