@@ -283,30 +283,30 @@ const ProductCard = ({ title, description, price, image, className }: any) => {
 const MenuGrid = () => {
   const products = [
     {
-      title: "Dubai Cake",
-      description: "Our signature dark chocolate indulgence with a salted caramel center and gold leaf finish.",
-      price: "45",
-      image: "https://images.unsplash.com/photo-1571115177098-24ec42ed2bb4?auto=format&fit=crop&q=80&w=800",
+      title: "Signature Birthday Cakes",
+      description: "Baked with love and personalized for your special day. Available in a variety of flavors and themes.",
+      price: "25",
+      image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800",
       className: "lg:col-span-7"
     },
     {
-      title: "Rummy Chocolate",
-      description: "Rich, boozy, and deeply decadent. For the serious chocolate lover.",
-      price: "38",
-      image: "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?auto=format&fit=crop&q=80&w=800",
+      title: "Signature Slices",
+      description: "Perfectly portioned slices of our daily bakes. Try our Rummy Chocolate or seasonal favorites.",
+      price: "3",
+      image: "https://scontent.fceb1-1.fna.fbcdn.net/v/t39.30808-6/686336922_122128964427047824_4974757762857934377_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHz5xa5ykS59B67fMEDPiFPZdsOBM0cJp5l2w4EzRwmnj5-f8hlcOERDj1uUsp6o4uw6_V_9i8BA1NVJ2Za0qXK&_nc_ohc=ra9jHjUVqIMQ7kNvwHjBts5&_nc_oc=AdqTN9EUFaZRPWCYA5p1Mw4aCrePY94R0VIaxEHqr-PH560X51k34JMTM5RdNPx-Nd4&_nc_zt=23&_nc_ht=scontent.fceb1-1.fna&_nc_gid=M96DfZ0GlbCpf8tNdTDwrw&_nc_ss=7b2a8&oh=00_Af4kzpThw1rZ_mpZhde4tP0-HW9J3nO0lk5kwwLpuYSkHA&oe=6A0CD01E",
       className: "lg:col-span-5"
     },
     {
       title: "Custom Wedding Cakes",
-      description: "Elegant, multi-tiered creations tailored to your unique love story.",
+      description: "Elegant, multi-tiered creations tailored to your unique love story and floral inspirations.",
       price: "250",
-      image: "https://images.unsplash.com/photo-1522673607200-164883eecd0c?auto=format&fit=crop&q=80&w=800",
+      image: "https://scontent.fceb1-1.fna.fbcdn.net/v/t39.30808-6/635138963_122121958413047824_7655843915748301878_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeFwItnDY6GJvERa-hRP1Ki7NGtnVUby6I80a2dVRvLoj528AD5nL2Ju_BW5yXwQRz1eu0SlVBAztFMFGKrjprKn&_nc_ohc=oVwzgqp-6MEQ7kNvwHqeQrt&_nc_oc=AdpzK9mFnMS_zgGtJl32iCJ_jhVgBASQfTFpTkUcwgiQgPtGWtxQA-uxJWj-p0sleP4&_nc_zt=23&_nc_ht=scontent.fceb1-1.fna&_nc_gid=v-G04TvZVx3biFqF3Sj6xA&_nc_ss=7b2a8&oh=00_Af6wuXgjEYBQFmXkaSvgtwIRuU07aI9m-3SS7Z6FD2onNw&oe=6A0CEF3A",
       className: "lg:col-span-5"
     },
     {
-      title: "Birthday Cupcakes",
-      description: "A dozen of our fluffiest bakes with artisan buttercream and sprinkles.",
-      price: "24",
+      title: "Artisan Cupcakes",
+      description: "Fluffy bakes topped with our signature honeycomb buttercream and daily inspirations.",
+      price: "3",
       image: "https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&q=80&w=800",
       className: "lg:col-span-7"
     }
