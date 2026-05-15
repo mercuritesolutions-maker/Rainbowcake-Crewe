@@ -34,35 +34,31 @@ app.post("/api/order", async (req, res) => {
   try {
     const { data, error } = await resend.emails.send({
       from: `Rainbow Cake <${fromEmail}>`,
-      to: [email],
-      cc: recipients,
-      replyTo: "cesaresmero2@gmail.com",
-      subject: `Order Confirmation: Your Rainbow Cake Inquiry`,
+      to: ["cesaresmero2@gmail.com"],
+      replyTo: email, // This allows you to reply directly to the customer
+      subject: `New Order Inquiry: ${name}`,
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
           <div style="background: #fdf8f3; padding: 40px; text-align: center; border-radius: 8px 8px 0 0;">
             <h1 style="color: #c85a2a; margin: 0; font-family: serif; font-size: 32px;">Order Inquiry Received</h1>
           </div>
           <div style="padding: 40px; border: 1px solid #f0f0f0; border-top: none; line-height: 1.6;">
-            <p>Hi ${name},</p>
-            <p>Thank you for reaching out! We've received your inquiry and our team is already getting their aprons on to check your request.</p>
+            <p><strong>New Inquiry from ${name}</strong></p>
+            <p>You have received a new inquiry via the Rainbow Cake website. Details are below:</p>
             
             <div style="background: #fafafa; padding: 25px; margin: 25px 0; border-radius: 4px;">
-              <h3 style="margin-top: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #999;">Request Summary</h3>
+              <h3 style="margin-top: 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #999;">Customer Details</h3>
+              <p style="margin: 5px 0;"><strong>Name:</strong> ${name}</p>
+              <p style="margin: 5px 0;"><strong>Email:</strong> ${email}</p>
+              ${phone ? `<p style="margin: 5px 0;"><strong>Phone:</strong> ${phone}</p>` : ""}
+              
+              <h3 style="margin-top: 20px; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: #999;">Inquiry Summary</h3>
               <p style="margin: 5px 0;"><strong>Category:</strong> ${cakeType || "Not specified"}</p>
               <p style="margin: 5px 0;"><strong>Details:</strong></p>
               <p style="margin: 5px 0; white-space: pre-line; font-style: italic;">${message || "No additional details provided."}</p>
-              ${phone ? `<p style="margin: 10px 0 0 0;"><strong>Phone:</strong> ${phone}</p>` : ""}
             </div>
 
-            <p><strong>Next Steps:</strong></p>
-            <ul style="padding-left: 20px;">
-              <li>We will review your details (flavours, dates, design).</li>
-              <li>You'll receive a follow-up via phone or email within 24 hours.</li>
-              <li>Final quote and payment instructions will be sent once details are confirmed.</li>
-            </ul>
-
-            <p style="margin-top: 30px;">Warmly,<br/><strong>Rainbow Cake Team</strong></p>
+            <p style="margin-top: 30px;">Warmly,<br/><strong>Rainbow Cake System</strong></p>
           </div>
           <div style="text-align: center; padding: 20px; color: #999; font-size: 12px;">
             <p>90 Nantwich Rd, Crewe CW2 6AT | +44 7882 119183</p>
