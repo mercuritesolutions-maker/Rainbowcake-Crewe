@@ -772,19 +772,19 @@ const CustomCakesGallery = ({ onOpenOrder }: { onOpenOrder: (type?: string) => v
 const OrderProcess = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
   const steps = [
     {
-      title: "Choose Your Cake",
-      desc: "Browse our menu or dream up a custom creation.",
+      title: "Pick Your Favorites",
+      desc: "Browse our signature collection and add treats to your inquiry bag.",
       icon: <Cake size={40} />
     },
     {
-      title: "Get in Touch",
-      desc: "Fill our inquiry form or message on Instagram to discuss details.",
-      icon: <PhoneCall size={40} />
+      title: "Send Inquiry",
+      desc: "Review your selection and send us your details—no payment needed yet.",
+      icon: <ShoppingBag size={40} />
     },
     {
-      title: "Enjoy the Sparkle",
-      desc: "Pick up from our Crewe shop or get local delivery.",
-      icon: <CheckCircle size={40} />
+      title: "Bake & Celebrate",
+      desc: "We'll confirm within 24 hours to finalize your order for pickup or delivery.",
+      icon: <Truck size={40} />
     }
   ];
 
