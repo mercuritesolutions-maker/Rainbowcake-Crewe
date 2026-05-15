@@ -15,7 +15,8 @@ import {
   Coffee,
   CheckCircle,
   Truck,
-  PhoneCall
+  PhoneCall,
+  Plus
 } from '@phosphor-icons/react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -25,9 +26,176 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+// --- Constants & Types ---
+
+const MENU_ITEMS = [
+  {
+    id: "bday-cake",
+    title: "Signature Birthday Cake",
+    description: "Multi-layered sponge with buttercream. Customizable theme.",
+    price: 25,
+    category: "Cakes",
+    image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800",
+    tags: ["Popular", "Bespoke"]
+  },
+  {
+    id: "sig-slices",
+    title: "Signature Cake Slices",
+    description: "A perfect trial of our best-selling daily bakes.",
+    price: 3,
+    category: "Treats",
+    image: "https://scontent.fceb1-1.fna.fbcdn.net/v/t39.30808-6/686336922_122128964427047824_4974757762857934377_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHz5xa5ykS59B67fMEDPiFPZdsOBM0cJp5l2w4EzRwmnj5-f8hlcOERDj1uUsp6o4uw6_V_9i8BA1NVJ2Za0qXK&_nc_ohc=ra9jHjUVqIMQ7kNvwHjBts5&_nc_oc=AdqTN9EUFaZRPWCYA5p1Mw4aCrePY94R0VIaxEHqr-PH560X51k34JMTM5RdNPx-Nd4&_nc_zt=23&_nc_ht=scontent.fceb1-1.fna&_nc_gid=M96DfZ0GlbCpf8tNdTDwrw&_nc_ss=7b2a8&oh=00_Af4kzpThw1rZ_mpZhde4tP0-HW9J3nO0lk5kwwLpuYSkHA&oe=6A0CD01E",
+    tags: ["Daily Bakes"]
+  },
+  {
+    id: "wedding-cake",
+    title: "Bespoke Wedding Masterpiece",
+    description: "Multitiered elegance tailored to your reception theme.",
+    price: 250,
+    category: "Specialty",
+    image: "https://scontent.fceb1-1.fna.fbcdn.net/v/t39.30808-6/635138963_122121958413047824_7655843915748301878_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeFwItnDY6GJvERa-hRP1Ki7NGtnVUby6I80a2dVRvLoj528AD5nL2Ju_BW5yXwQRz1eu0SlVBAztFMFGKrjprKn&_nc_ohc=oVwzgqp-6MEQ7kNvwHqeQrt&_nc_oc=AdpzK9mFnMS_zgGtJl32iCJ_jhVgBASQfTFpTkUcwgiQgPtGWtxQA-uxJWj-p0sleP4&_nc_zt=23&_nc_ht=scontent.fceb1-1.fna&_nc_gid=v-G04TvZVx3biFqF3Sj6xA&_nc_ss=7b2a8&oh=00_Af6wuXgjEYBQFmXkaSvgtwIRuU07aI9m-3SS7Z6FD2onNw&oe=6A0CEF3A",
+    tags: ["Floral", "Premium"]
+  },
+  {
+    id: "cupcakes",
+    title: "Artisan Cupcakes (Set of 6)",
+    description: "Honeycomb buttercream on fluffy vanilla sponges.",
+    price: 15,
+    category: "Treats",
+    image: "https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&q=80&w=800",
+    tags: ["Gifts"]
+  },
+  {
+    id: "cookies",
+    title: "Chunky Chocolate Cookies",
+    description: "Loaded with fair-trade Belgian chocolate chunks.",
+    price: 3,
+    category: "Treats",
+    image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&q=80&w=800",
+    tags: ["Daily Bakes"]
+  }
+];
+
+interface CartItem {
+  id: string;
+  title: string;
+  price: number;
+  quantity: number;
+  image: string;
+}
+
 // --- Components ---
 
-const OrderModal = ({ isOpen, onClose, initialCakeType = "" }: { isOpen: boolean, onClose: () => void, initialCakeType?: string }) => {
+const CartSidebar = ({ 
+  isOpen, 
+  onClose, 
+  cart, 
+  onUpdateQuantity, 
+  onRemove,
+  onCheckout
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  cart: CartItem[]; 
+  onUpdateQuantity: (id: string, delta: number) => void;
+  onRemove: (id: string) => void;
+  onCheckout: () => void;
+}) => {
+  const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  return (
+    <AnimatePresence>
+      {isOpen && (
+        <>
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onClose}
+            className="fixed inset-0 bg-brand-ink/40 backdrop-blur-sm z-[200]"
+          />
+          <motion.div 
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 200 }}
+            className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-brand-bg z-[201] shadow-2xl flex flex-col"
+          >
+            <div className="p-8 border-b border-brand-border flex items-center justify-between">
+              <div>
+                <h3 className="text-2xl font-display">Your Bag</h3>
+                <p className="text-xs font-bold uppercase tracking-widest text-brand-accent mt-1">
+                  {cart.length === 0 ? "Empty" : `${cart.length} ${cart.length === 1 ? 'Item' : 'Items'}`}
+                </p>
+              </div>
+              <button onClick={onClose} className="p-2 hover:bg-brand-surface rounded-full transition-colors">
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto p-8 space-y-8">
+              {cart.map((item) => (
+                <div key={item.id} className="flex gap-4">
+                  <div className="w-20 h-20 bg-brand-surface rounded-sm overflow-hidden flex-shrink-0">
+                    <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="text-sm font-bold uppercase tracking-tight">{item.title}</h4>
+                      <button onClick={() => onRemove(item.id)} className="text-stone-400 hover:text-red-500">
+                        <X size={16} />
+                      </button>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center gap-3 bg-brand-surface px-2 py-1 border border-brand-border rounded-sm">
+                        <button onClick={() => onUpdateQuantity(item.id, -1)} className="hover:text-brand-accent">-</button>
+                        <span className="font-medium w-4 text-center">{item.quantity}</span>
+                        <button onClick={() => onUpdateQuantity(item.id, 1)} className="hover:text-brand-accent">+</button>
+                      </div>
+                      <span className="font-bold">£{item.price * item.quantity}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {cart.length === 0 && (
+                <div className="py-20 text-center opacity-40 italic font-display text-xl">
+                  Your bag is waiting for something sweet...
+                </div>
+              )}
+            </div>
+
+            {cart.length > 0 && (
+              <div className="p-8 border-t border-brand-border space-y-6">
+                <div className="flex items-center justify-between text-xl font-display">
+                  <span>Total Amount</span>
+                  <span className="font-sans font-bold">£{total}</span>
+                </div>
+                <button 
+                  onClick={onCheckout}
+                  className="w-full bg-brand-accent text-white py-4 font-bold uppercase tracking-widest text-sm hover:bg-brand-ink transition-colors flex items-center justify-center gap-2"
+                >
+                  Confirm Inquiry <ArrowRight size={18} />
+                </button>
+              </div>
+            )}
+          </motion.div>
+        </>
+      )}
+    </AnimatePresence>
+  );
+};
+
+const OrderModal = ({ 
+  isOpen, 
+  onClose, 
+  initialCakeType = "", 
+  cartSummary = "" 
+}: { 
+  isOpen: boolean; 
+  onClose: () => void; 
+  initialCakeType?: string;
+  cartSummary?: string;
+}) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -38,8 +206,14 @@ const OrderModal = ({ isOpen, onClose, initialCakeType = "" }: { isOpen: boolean
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   useEffect(() => {
-    if (isOpen) setFormData(prev => ({ ...prev, cakeType: initialCakeType }));
-  }, [isOpen, initialCakeType]);
+    if (isOpen) {
+      setFormData(prev => ({ 
+        ...prev, 
+        cakeType: initialCakeType || (cartSummary ? "Cart Order" : ""),
+        message: cartSummary ? `Order Summary:\n${cartSummary}\n\nAdditional details:` : prev.message
+      }));
+    }
+  }, [isOpen, initialCakeType, cartSummary]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,13 +254,16 @@ const OrderModal = ({ isOpen, onClose, initialCakeType = "" }: { isOpen: boolean
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="relative bg-brand-bg w-full max-w-lg rounded-sm shadow-2xl p-8 overflow-hidden"
+            className="relative bg-brand-bg w-full max-w-lg rounded-sm shadow-2xl p-8 overflow-hidden max-h-[90vh] overflow-y-auto"
           >
             <button onClick={onClose} className="absolute top-4 right-4 text-stone-400 hover:text-brand-ink">
               <X size={24} />
             </button>
 
-            <h3 className="text-3xl font-display mb-6">Place an Inquiry</h3>
+            <h3 className="text-3xl font-display mb-2">Finalize Inquiry</h3>
+            <p className="text-stone-500 text-sm mb-8 leading-relaxed">
+              We'll review your details and contact you within 24 hours to confirm everything.
+            </p>
             
             {status === 'success' ? (
               <motion.div 
@@ -133,14 +310,20 @@ const OrderModal = ({ isOpen, onClose, initialCakeType = "" }: { isOpen: boolean
                     onChange={e => setFormData({ ...formData, email: e.target.value })}
                   />
                 </div>
+                {cartSummary && (
+                   <div className="p-3 bg-brand-surface border border-brand-border rounded-sm text-xs font-mono opacity-60 max-h-32 overflow-y-auto">
+                     {cartSummary}
+                   </div>
+                )}
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase tracking-widest opacity-40">Interested In</label>
+                  <label className="text-xs font-bold uppercase tracking-widest opacity-40">Order Category</label>
                   <select 
                     className="w-full bg-brand-surface border border-brand-border p-3 focus:outline-none focus:border-brand-accent transition-colors appearance-none"
                     value={formData.cakeType}
                     onChange={e => setFormData({ ...formData, cakeType: e.target.value })}
                   >
                     <option value="">Select a category</option>
+                    <option value="Cart Order">Cart Order</option>
                     <option value="Birthday Cake">Birthday Cake</option>
                     <option value="Wedding Cake">Wedding Cake</option>
                     <option value="Slices/Cupcakes">Slices or Cupcakes</option>
@@ -148,9 +331,9 @@ const OrderModal = ({ isOpen, onClose, initialCakeType = "" }: { isOpen: boolean
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs font-bold uppercase tracking-widest opacity-40">Message / Details</label>
+                  <label className="text-xs font-bold uppercase tracking-widest opacity-40">Notes / Preferences</label>
                   <textarea 
-                    rows={4}
+                    rows={cartSummary ? 2 : 4}
                     placeholder="Tell us about flavors, dates, or specific themes..."
                     className="w-full bg-brand-surface border border-brand-border p-3 focus:outline-none focus:border-brand-accent transition-colors resize-none"
                     value={formData.message}
@@ -169,7 +352,6 @@ const OrderModal = ({ isOpen, onClose, initialCakeType = "" }: { isOpen: boolean
               </form>
             )}
 
-            {/* Subtle brand noise overlay inside modal */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-[-1] noise-bg" />
           </motion.div>
         </div>
@@ -178,7 +360,15 @@ const OrderModal = ({ isOpen, onClose, initialCakeType = "" }: { isOpen: boolean
   );
 };
 
-const Navbar = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
+const Navbar = ({ 
+  onOpenOrder, 
+  onOpenCart, 
+  cartCount 
+}: { 
+  onOpenOrder: (type?: string) => void;
+  onOpenCart: () => void;
+  cartCount: number;
+}) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -218,24 +408,46 @@ const Navbar = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
               {item.label}
             </a>
           ))}
-          <button 
-            onClick={() => onOpenOrder()}
-            className="bg-brand-accent text-white px-6 py-2.5 rounded-sm text-sm font-medium shadow-sm hover:-translate-y-[1px] active:scale-[0.98] transition-all duration-300 pointer-events-auto cursor-pointer"
-          >
-            Order Now
-          </button>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={onOpenCart}
+              className="relative p-2 text-brand-ink hover:text-brand-accent transition-colors"
+            >
+              <ShoppingBag size={24} />
+              {cartCount > 0 && (
+                <span className="absolute top-0 right-0 bg-brand-accent text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
+            </button>
+            <button 
+              onClick={() => onOpenOrder()}
+              className="bg-brand-accent text-white px-6 py-2.5 rounded-sm text-sm font-medium shadow-sm hover:-translate-y-[1px] active:scale-[0.98] transition-all duration-300 pointer-events-auto cursor-pointer"
+            >
+              Order Now
+            </button>
+          </div>
         </div>
 
-        {/* Mobile Toggle */}
-        <button 
-          className="md:hidden text-brand-ink"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          {isMobileMenuOpen ? <X size={28} /> : <List size={28} />}
-        </button>
+        {/* Mobile Nav Toggle */}
+        <div className="flex items-center gap-4 md:hidden">
+          <button onClick={onOpenCart} className="relative p-2 text-brand-ink">
+            <ShoppingBag size={24} />
+            {cartCount > 0 && (
+              <span className="absolute top-0 right-0 bg-brand-accent text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                {cartCount}
+              </span>
+            )}
+          </button>
+          <button 
+            className="text-brand-ink"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            {isMobileMenuOpen ? <X size={28} /> : <List size={28} />}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
@@ -428,12 +640,12 @@ const About = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
   );
 };
 
-const ProductCard = ({ title, description, price, image, className, onOrder }: any) => {
+const ProductCard = ({ item, onOrder, onAddToCart }: any) => {
   return (
     <motion.div 
       className={cn(
         "group relative bg-brand-surface border border-brand-border p-6 rounded-sm overflow-hidden hover:border-brand-accent/50 transition-colors duration-500",
-        className
+        item.className
       )}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -441,58 +653,37 @@ const ProductCard = ({ title, description, price, image, className, onOrder }: a
     >
       <div className="aspect-[16/10] mb-6 overflow-hidden rounded-sm">
         <img 
-          src={image} 
-          alt={title}
+          src={item.image} 
+          alt={item.title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
         />
       </div>
-      <h3 className="text-2xl font-display mb-2">{title}</h3>
-      <p className="text-sm text-stone-500 mb-6 line-clamp-2">{description}</p>
+      <div className="flex items-center gap-2 mb-4">
+        {item.tags?.map((tag: string) => (
+          <span key={tag} className="text-[10px] font-bold uppercase tracking-widest bg-brand-accent/10 text-brand-accent px-2 py-1 rounded-full">
+            {tag}
+          </span>
+        ))}
+      </div>
+      <h3 className="text-2xl font-display mb-2">{item.title}</h3>
+      <p className="text-sm text-stone-500 mb-6 line-clamp-2">{item.description}</p>
       <div className="flex items-center justify-between mt-auto">
-        <span className="text-lg font-medium">from £{price}</span>
-        <button 
-          onClick={() => onOrder(title)}
-          className="p-2 rounded-full border border-brand-accent text-brand-accent hover:bg-brand-accent hover:text-white transition-all"
-        >
-          <ShoppingBag size={20} />
-        </button>
+        <span className="text-lg font-medium">from £{item.price}</span>
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => onAddToCart(item)}
+            className="flex items-center gap-2 bg-brand-accent text-white px-4 py-2 rounded-sm text-xs font-bold uppercase tracking-widest hover:bg-brand-ink transition-colors"
+          >
+            <Plus size={16} />
+            Add
+          </button>
+        </div>
       </div>
     </motion.div>
   );
 };
 
-const MenuGrid = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => {
-  const products = [
-    {
-      title: "Signature Birthday Cakes",
-      description: "Baked with love and personalized for your special day. Available in a variety of flavors and themes.",
-      price: "25",
-      image: "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&q=80&w=800",
-      className: "lg:col-span-12 xl:col-span-7"
-    },
-    {
-      title: "Signature Slices",
-      description: "Perfectly portioned slices of our daily bakes. Try our Rummy Chocolate or seasonal favorites.",
-      price: "3",
-      image: "https://scontent.fceb1-1.fna.fbcdn.net/v/t39.30808-6/686336922_122128964427047824_4974757762857934377_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeHz5xa5ykS59B67fMEDPiFPZdsOBM0cJp5l2w4EzRwmnj5-f8hlcOERDj1uUsp6o4uw6_V_9i8BA1NVJ2Za0qXK&_nc_ohc=ra9jHjUVqIMQ7kNvwHjBts5&_nc_oc=AdqTN9EUFaZRPWCYA5p1Mw4aCrePY94R0VIaxEHqr-PH560X51k34JMTM5RdNPx-Nd4&_nc_zt=23&_nc_ht=scontent.fceb1-1.fna&_nc_gid=M96DfZ0GlbCpf8tNdTDwrw&_nc_ss=7b2a8&oh=00_Af4kzpThw1rZ_mpZhde4tP0-HW9J3nO0lk5kwwLpuYSkHA&oe=6A0CD01E",
-      className: "lg:col-span-6 xl:col-span-5"
-    },
-    {
-      title: "Custom Wedding Cakes",
-      description: "Elegant, multi-tiered creations tailored to your unique love story and floral inspirations.",
-      price: "250",
-      image: "https://scontent.fceb1-1.fna.fbcdn.net/v/t39.30808-6/635138963_122121958413047824_7655843915748301878_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=833d8c&_nc_eui2=AeFwItnDY6GJvERa-hRP1Ki7NGtnVUby6I80a2dVRvLoj528AD5nL2Ju_BW5yXwQRz1eu0SlVBAztFMFGKrjprKn&_nc_ohc=oVwzgqp-6MEQ7kNvwHqeQrt&_nc_oc=AdpzK9mFnMS_zgGtJl32iCJ_jhVgBASQfTFpTkUcwgiQgPtGWtxQA-uxJWj-p0sleP4&_nc_zt=23&_nc_ht=scontent.fceb1-1.fna&_nc_gid=v-G04TvZVx3biFqF3Sj6xA&_nc_ss=7b2a8&oh=00_Af6wuXgjEYBQFmXkaSvgtwIRuU07aI9m-3SS7Z6FD2onNw&oe=6A0CEF3A",
-      className: "lg:col-span-6 xl:col-span-5"
-    },
-    {
-      title: "Artisan Cupcakes",
-      description: "Fluffy bakes topped with our signature honeycomb buttercream and daily inspirations.",
-      price: "3",
-      image: "https://images.unsplash.com/photo-1519869325930-281384150729?auto=format&fit=crop&q=80&w=800",
-      className: "lg:col-span-12 xl:col-span-7"
-    }
-  ];
-
+const MenuGrid = ({ onOpenOrder, onAddToCart }: { onOpenOrder: (type?: string) => void, onAddToCart: (item: any) => void }) => {
   return (
     <section id="menu" className="py-24 px-6 md:px-10 bg-brand-surface/40">
       <div className="max-w-[1400px] mx-auto text-left mb-16">
@@ -500,9 +691,9 @@ const MenuGrid = ({ onOpenOrder }: { onOpenOrder: (type?: string) => void }) => 
         <p className="text-stone-500 max-w-xl text-lg">Every piece is hand-crafted and baked daily using only the finest local ingredients.</p>
       </div>
       
-      <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {products.map((p, i) => (
-          <ProductCard key={i} {...p} onOrder={onOpenOrder} />
+      <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {MENU_ITEMS.map((item, i) => (
+          <ProductCard key={item.id} item={item} onOrder={onOpenOrder} onAddToCart={onAddToCart} />
         ))}
       </div>
     </section>
@@ -793,30 +984,74 @@ const Footer = () => {
 
 export default function App() {
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedCakeType, setSelectedCakeType] = useState("");
+  const [cart, setCart] = useState<CartItem[]>([]);
 
   const openOrder = (type: string = "") => {
     setSelectedCakeType(type);
     setIsOrderModalOpen(true);
   };
 
+  const addToCart = (item: any) => {
+    setCart(prev => {
+      const existing = prev.find(i => i.id === item.id);
+      if (existing) {
+        return prev.map(i => i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i);
+      }
+      return [...prev, { ...item, quantity: 1 }];
+    });
+    setIsCartOpen(true);
+  };
+
+  const updateQuantity = (id: string, delta: number) => {
+    setCart(prev => prev.map(item => 
+      item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
+    ));
+  };
+
+  const removeFromCart = (id: string) => {
+    setCart(prev => prev.filter(item => item.id !== id));
+  };
+
+  const cartSummary = cart
+    .map(item => `${item.title} x${item.quantity} (£${item.price * item.quantity})`)
+    .join("\n");
+
   return (
     <div className="noise-bg selection:bg-brand-accent selection:text-white">
-      <Navbar onOpenOrder={openOrder} />
+      <Navbar 
+        onOpenOrder={openOrder} 
+        onOpenCart={() => setIsCartOpen(true)}
+        cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
+      />
       <Hero onOpenOrder={openOrder} />
       <Marquee />
       <About onOpenOrder={openOrder} />
-      <MenuGrid onOpenOrder={openOrder} />
+      <MenuGrid onOpenOrder={openOrder} onAddToCart={addToCart} />
       <CustomCakesGallery onOpenOrder={openOrder} />
       <OrderProcess onOpenOrder={openOrder} />
       <Testimonials />
       <Contact />
       <Footer />
       
+      <CartSidebar 
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        cart={cart}
+        onUpdateQuantity={updateQuantity}
+        onRemove={removeFromCart}
+        onCheckout={() => {
+          setIsCartOpen(false);
+          setIsOrderModalOpen(true);
+        }}
+      />
+
       <OrderModal 
         isOpen={isOrderModalOpen} 
         onClose={() => setIsOrderModalOpen(false)} 
         initialCakeType={selectedCakeType}
+        cartSummary={cartSummary}
       />
     </div>
   );
